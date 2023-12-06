@@ -7,7 +7,9 @@ except:
     
 # Goal - to use soil type, Monthly rainfall (2017), length of growing period
 
-from Data_extraction import crops, rainfall, matrix_ready_soils, growing_periods, irrigation
+from Data_extraction import crops, rainfall, matrix_ready_soils, all_known_soil_types, growing_periods, irrigation
+from sklearn import model_selection
+import numpy as np
 
 x = []
 y = []
@@ -29,4 +31,14 @@ for dist_state_code in crops.keys():
                     
                     y.append(crops[dist_state_code]['Rice_yield_kg_per_ha'])
         
+
+x_train, x_test, y_train, y_test = \
+model_selection.train_test_split(
+    x, 
+    y, 
+    test_size=0.2, 
+    shuffle=True, 
+    random_state=0
+)
+
 
