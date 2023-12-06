@@ -74,6 +74,7 @@ with open(rainfall_file_path, 'r') as file:
 soiltype_file_path = 'India_Crop_Data/SoilType.csv'
 
 districts_soil_types = {}
+all_known_soil_types = []
 
 with open(soiltype_file_path, 'r') as file:
     csv_reader = csv.reader(file)
@@ -82,8 +83,6 @@ with open(soiltype_file_path, 'r') as file:
     state_code_idx = 2
     soil_type_idx = 5
     
-    all_known_soil_types = []
-
     for row in csv_reader:  
         
         if row[0] != "Dist Code": #Ignore first row
@@ -96,7 +95,7 @@ with open(soiltype_file_path, 'r') as file:
             
             for soil_type_and_pct in soil_types.split(';'):
                 
-                split = soil_type_and_pct.split("-")
+                split = soil_type_and_pct.split(" - ")
                 
                 if len(split) == 1: # Only 1 soil type, assume it is 100%
                     soil_type = split[0].strip()
@@ -106,7 +105,8 @@ with open(soiltype_file_path, 'r') as file:
                     soil_type = split[0].strip()
                     soil_type_pct = split[1].strip()[0:-1]
                     
-                districts_soils.update({soil_type : soil_type_pct})
+                #print(soil_type, soil_type_pct)
+                districts_soils.update({soil_type : float(soil_type_pct)})
             print()
             
             
@@ -117,7 +117,20 @@ with open(soiltype_file_path, 'r') as file:
                 
                 districts_soil_types.update({district_state_code : districts_soils})
 
-     
+    matrix_ready_soils = {}
+    
+    for district_state_code, district_soil_types in districts_soil_types.items():
+         
+        pct_of_each_soil_type = []
+        for soil_type in all_known_soil_types:
+            
+            if soil_type in district_soil_types.keys():
+                pct_of_each_soil_type.append(district_soil_types[soil_type] / 100)
+            else:
+                pct_of_each_soil_type.append(0)
+                
+        matrix_ready_soils.update({district_state_code : pct_of_each_soil_type})
+                
 
 
 
@@ -135,9 +148,11 @@ with open(growing_period_file_path, 'r') as file:
 
     for row in csv_reader:  
         
-        district_state_code = row[district_code_idx] + "_" + row[state_code_idx]
-    
-        growing_periods.update({district_state_code : row[num_growing_days_per_year_idx]})
+        if row[district_code_idx] != 'Dist Code':
+        
+            district_state_code = row[district_code_idx] + "_" + row[state_code_idx]
+        
+            growing_periods.update({district_state_code : float(row[num_growing_days_per_year_idx])})
 
 
    
