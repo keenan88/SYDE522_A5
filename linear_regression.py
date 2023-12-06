@@ -18,4 +18,5 @@ y_predict = x_test * W
 
 rmse = np.sqrt(np.mean(np.square(y_predict.T - y_test)))
 
+print(rmse)
 

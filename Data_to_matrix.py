@@ -25,8 +25,7 @@ for dist_state_code in crops.keys():
                         rainfall[dist_state_code] + \
                         [growing_periods[dist_state_code], 
                         irrigation[dist_state_code]]
-                    
-                    
+                        
                     x.append(datapoint)
                     
                     y.append(crops[dist_state_code]['Rice_yield_kg_per_ha'])

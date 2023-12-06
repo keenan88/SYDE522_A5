@@ -8,6 +8,7 @@ except:
 # Goal - to use soil type, Monthly rainfall (2017), length of growing period
 
 import csv
+import numpy as np
 
 year = '2015'
 
@@ -54,6 +55,8 @@ with open(rainfall_file_path, 'r') as file:
     year_idx = 1
     state_code_idx = 2
     january_rainfall_mm_idx = 5
+    
+    max_monthly_rainfall = 0
 
     for row in csv_reader:  
         
@@ -65,10 +68,19 @@ with open(rainfall_file_path, 'r') as file:
             
             for month_idx in range(january_rainfall_mm_idx, january_rainfall_mm_idx + 12):
                 monthly_rainfall_mm.append(float(row[month_idx]))
+                
+                if float(row[month_idx]) > max_monthly_rainfall:
+                    max_monthly_rainfall = float(row[month_idx])
             
             print(district_state_code)
             
             rainfall.update({district_state_code : monthly_rainfall_mm})
+            
+    for district_state_code in rainfall.keys():
+        
+        rainfall[district_state_code] = list(np.array(rainfall[district_state_code]) / max_monthly_rainfall)
+            
+        
 
 
 soiltype_file_path = 'India_Crop_Data/SoilType.csv'
@@ -152,7 +164,7 @@ with open(growing_period_file_path, 'r') as file:
         
             district_state_code = row[district_code_idx] + "_" + row[state_code_idx]
         
-            growing_periods.update({district_state_code : float(row[num_growing_days_per_year_idx])})
+            growing_periods.update({district_state_code : float(row[num_growing_days_per_year_idx]) / 365})
 
 
    
